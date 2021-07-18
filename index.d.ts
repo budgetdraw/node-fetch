@@ -27,6 +27,7 @@
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
 /// <reference types="node" />
+/// <reference types="@cloudflare/workers-types" />
 
 import FormData from "formdata-node";
 import { Agent, IncomingHttpHeaders } from "http";
@@ -55,6 +56,10 @@ export interface AbortSignal {
     onabort?: null | ((this: AbortSignal, event: any) => void);
 }
 
+interface RequestCfProperties extends Omit<IncomingRequestCfProperties, 'tlsClientAuth'> {
+    tlsClientAuth?: IncomingRequestCfProperties['tlsClientAuth'] | null;
+}
+
 export class Request extends Body {
     constructor(input: RequestInfo, init?: RequestInit);
     clone(): Request;
@@ -75,7 +80,7 @@ export class Request extends Body {
     protocol: string;
     size: number;
     timeout: number;
-    cf: any;
+    cf: RequestCfProperties;
 }
 
 export interface RequestInit {
@@ -92,7 +97,7 @@ export interface RequestInit {
     follow?: number; // =20 maximum redirect count. 0 to not follow redirect
     size?: number; // =0 maximum response body size in bytes. 0 to disable
     timeout?: number; // =0 req/res timeout in ms, it resets on redirect. 0 to disable (OS limit applies)
-    cf?: any;
+    cf?: RequestCfProperties;
 
     // node-fetch does not support mode, cache or credentials options
 }
