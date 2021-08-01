@@ -32,6 +32,7 @@
 import FormData from "formdata-node";
 import { Agent, IncomingHttpHeaders } from "http";
 import { URLSearchParams, URL } from "url";
+import { ReadableStream } from "web-streams-polyfill/ponyfill/es2018";
 
 // `AbortSignal` is defined here to prevent a dependency on a particular
 // implementation like the `abort-controller` package, and to avoid requiring
