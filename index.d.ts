@@ -192,20 +192,6 @@ export class Headers implements Iterable<[string, string]> {
     [Symbol.iterator](): Iterator<[string, string]>;
 }
 
-type BlobPart = ArrayBuffer | ArrayBufferView | Blob | string;
-
-interface BlobOptions {
-    type?: string;
-    endings?: "transparent" | "native";
-}
-
-export class Blob {
-    constructor(blobParts?: BlobPart[], options?: BlobOptions);
-    readonly type: string;
-    readonly size: number;
-    slice(start?: number, end?: number): Blob;
-}
-
 export class Body {
     constructor(body?: any, opts?: { size?: number; timeout?: number });
     arrayBuffer(): Promise<ArrayBuffer>;
@@ -217,7 +203,6 @@ export class Body {
     json(): Promise<any>;
     size: number;
     text(): Promise<string>;
-    textConverted(): Promise<string>;
     // CHANGE: Added `formData()`
     formData(): Promise<FormData>;
     timeout: number;
