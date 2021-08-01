@@ -4,7 +4,7 @@
       presets: [
         [ '@babel/preset-env', {
           loose: true,
-          targets: { node: 4 },
+          targets: { node: 16 },
           exclude: [
             // skip some almost-compliant features on Node.js v4.x
             '@babel/plugin-transform-block-scoping',
@@ -21,7 +21,7 @@
       presets: [
         [ '@babel/preset-env', {
           loose: true,
-          targets: { node: 4 },
+          targets: { node: 16 },
           exclude: [
             '@babel/plugin-transform-block-scoping',
             '@babel/plugin-transform-classes',
@@ -38,7 +38,7 @@
       presets: [
         [ '@babel/preset-env', {
           loose: true,
-          targets: { node: 4 },
+          targets: { node: 16 },
           exclude: [
             '@babel/plugin-transform-block-scoping',
             '@babel/plugin-transform-classes',

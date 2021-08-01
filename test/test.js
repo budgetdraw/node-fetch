@@ -34,7 +34,7 @@ import HeadersOrig from "../src/headers.js";
 import RequestOrig from "../src/request.js";
 import ResponseOrig from "../src/response.js";
 import Body, {getInstanceBody} from "../src/body.js";
-import Blob from "../src/blob.js";
+import { Blob } from "buffer";
 
 const supportToString =
   {

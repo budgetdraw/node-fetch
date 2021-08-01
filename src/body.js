@@ -7,7 +7,7 @@
 
 import { ReadableStream, TransformStream } from "stream/web";
 
-import Blob, { BUFFER } from './blob.js';
+import { Blob } from "buffer";
 import FetchError from './fetch-error.js';
 import Stream, { PassThrough } from "stream";
 import Busboy from "busboy";
@@ -107,7 +107,7 @@ export function createReadableStream(instance) {
 	}
 
 	const readable = new ReadableStream({
-		start(controller) {
+		async start(controller) {
 			let array = undefined;
 			switch (bodyType) {
 				case "String":
@@ -120,7 +120,7 @@ export function createReadableStream(instance) {
 					break;
 				case "Blob":
 					// body is blob
-					array = new Uint8Array(Buffer.from(body[BUFFER]));
+					array = new Uint8Array(await body.arrayBuffer());
 					break;
 				case "Buffer":
 					// body is Buffer
@@ -218,15 +218,9 @@ Body.prototype = {
 	 */
 	blob() {
 		let ct = this.headers && this.headers.get('content-type') || '';
-		return consumeBody.call(this).then(buf => Object.assign(
-			// Prevent copying
-			new Blob([], {
-				type: ct.toLowerCase()
-			}),
-			{
-				[BUFFER]: buf
-			}
-		));
+		return consumeBody.call(this).then(buf => {
+			return new Blob([buf], {type: ct.toLowerCase()});
+		});
 	},
 
 	/**
@@ -576,8 +570,10 @@ export function writeToStream(dest, instance) {
 		// 	dest.end();
 		// 	break;
 		case "Blob":
-			dest.write(body[BUFFER]);
-			dest.end();
+			body.arrayBuffer().then(buf => {
+				dest.write(Buffer.from(buf));
+				dest.end();
+			});
 			break;
 		case "Buffer":
 			dest.write(body);
