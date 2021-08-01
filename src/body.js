@@ -5,20 +5,13 @@
  * Body interface provides common methods for Request and Response
  */
 
-import { ReadableStream, TransformStream} from "web-streams-polyfill/ponyfill/es6";
+import { ReadableStream, TransformStream } from "stream/web";
 
 import Blob, { BUFFER } from './blob.js';
 import FetchError from './fetch-error.js';
 import Stream, { PassThrough } from "stream";
 import Busboy from "busboy";
 import FormData from "formdata-node";
-
-let convert;
-try { convert = require('encoding').convert; } catch(e) {}
-
-function isUInt8Array(value) {
-	return Object.prototype.toString.call(chunk) === "[object UInt8Array]";
-}
 
 export const INTERNALS = Symbol('Body internals');
 
@@ -43,7 +36,7 @@ export function getTypeOfBody(body) {
 		return "Stream"
 	} else if (
 		body instanceof ReadableStream ||
-		// Allow detecting a "ReadableStream" from a different install of web-streams-polyfill
+		// Allow detecting a "ReadableStream" from a different install/realm
 		(body.constructor.name === "ReadableStream" && typeof body.getReader == "function")
 	) {
 		return "ReadableStream";
@@ -269,16 +262,6 @@ Body.prototype = {
 		return consumeBody.call(this);
 	},
 
-	/**
-	 * Decode response as text, while automatically detecting the encoding and
-	 * trying to decode to UTF-8 (non-spec api)
-	 *
-	 * @return  Promise
-	 */
-	textConverted() {
-		return consumeBody.call(this).then(buffer => convertBody(buffer, this.headers));
-	},
-
 	formData() {
 		return consumeBody.call(this).then(buffer => {
 			return new Promise((resolve, reject) => {
@@ -406,69 +389,6 @@ function consumeBody() {
 	);
 
 	return promise;
-}
-
-/**
- * Detect buffer encoding and convert to target encoding
- * ref: http://www.w3.org/TR/2011/WD-html5-20110113/parsing.html#determining-the-character-encoding
- *
- * @param   Buffer  buffer    Incoming buffer
- * @param   String  encoding  Target encoding
- * @return  String
- */
-function convertBody(buffer, headers) {
-	if (typeof convert !== 'function') {
-		throw new Error('The package `encoding` must be installed to use the textConverted() function');
-	}
-
-	const ct = headers.get('content-type');
-	let charset = 'utf-8';
-	let res, str;
-
-	// header
-	if (ct) {
-		res = /charset=([^;]*)/i.exec(ct);
-	}
-
-	// no charset in content type, peek at response body for at most 1024 bytes
-	str = buffer.slice(0, 1024).toString();
-
-	// html5
-	if (!res && str) {
-		res = /<meta.+?charset=(['"])(.+?)\1/i.exec(str);
-	}
-
-	// html4
-	if (!res && str) {
-		res = /<meta[\s]+?http-equiv=(['"])content-type\1[\s]+?content=(['"])(.+?)\2/i.exec(str);
-
-		if (res) {
-			res = /charset=(.*)/i.exec(res.pop());
-		}
-	}
-
-	// xml
-	if (!res && str) {
-		res = /<\?xml.+?encoding=(['"])(.+?)\1/i.exec(str);
-	}
-
-	// found charset
-	if (res) {
-		charset = res.pop();
-
-		// prevent decode issues when sites use incorrect encoding
-		// ref: https://hsivonen.fi/encoding-menu/
-		if (charset === 'gb2312' || charset === 'gbk') {
-			charset = 'gb18030';
-		}
-	}
-
-	// turn raw buffers into a single utf-8 buffer
-	return convert(
-		buffer,
-		'UTF-8',
-		charset
-	).toString();
 }
 
 /**

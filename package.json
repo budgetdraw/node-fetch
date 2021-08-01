@@ -1,6 +1,6 @@
 {
   "name": "@mrbbot/node-fetch",
-  "version": "4.4.0",
+  "version": "5.0.0",
   "private": false,
   "description": "A light-weight module that brings the Fetch API to node.js; Forked from https://npm.im/node-fetch",
   "main": "lib/index",
@@ -13,7 +13,7 @@
     "index.d.ts"
   ],
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=16.5.0"
   },
   "scripts": {
     "build": "cross-env BABEL_ENV=rollup rollup -c",
@@ -60,7 +60,6 @@
   "dependencies": {
     "@cloudflare/workers-types": "^2.2.2",
     "busboy": "^0.3.1",
-    "formdata-node": "^2.4.0",
-    "web-streams-polyfill": "^3.0.1"
+    "formdata-node": "^2.4.0"
   }
 }

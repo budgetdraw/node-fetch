@@ -12,7 +12,6 @@ import http from 'http';
 import https from 'https';
 import zlib from 'zlib';
 
-// import { ReadableStream, WritableStream, TransformStream } from "web-streams-polyfill";
 import { PassThrough } from 'stream';
 
 import { writeToStream, getTotalBytes, getInstanceBody } from './body';
