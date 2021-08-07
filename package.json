@@ -1,6 +1,6 @@
 {
   "name": "@mrbbot/node-fetch",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "private": false,
   "description": "A light-weight module that brings the Fetch API to node.js; Forked from https://npm.im/node-fetch",
   "main": "lib/index",
