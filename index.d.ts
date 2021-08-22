@@ -32,7 +32,7 @@
 import FormData from "formdata-node";
 import { Agent, IncomingHttpHeaders } from "http";
 import { URLSearchParams, URL } from "url";
-import { ReadableStream } from "web-streams-polyfill";
+import { ReadableStream } from "web-streams-polyfill/ponyfill/es2018";
 
 // `AbortSignal` is defined here to prevent a dependency on a particular
 // implementation like the `abort-controller` package, and to avoid requiring
@@ -148,34 +148,6 @@ export type RequestCache =
     | "only-if-cached"
     | "reload";
 
-export interface WebSocketMessageEvent {
-    type: "message";
-    data: string;
-}
-
-export interface WebSocketCloseEvent {
-    type: "close";
-    code?: number;
-    reason?: string;
-}
-
-export interface WebSocketErrorEvent {
-    type: "error";
-    error: any;
-}
-
-export interface WebSocket {
-    accept(): void;
-    addEventListener(type: "message", listener: (event: WebSocketMessageEvent) => void): void;
-    addEventListener(type: "close", listener: (event: WebSocketCloseEvent) => void): void;
-    addEventListener(type: "error", listener: (event: WebSocketErrorEvent) => void): void;
-    dispatchEvent(type: "message", event: WebSocketMessageEvent): void;
-    dispatchEvent(type: "close", event: WebSocketCloseEvent): void;
-    dispatchEvent(type: "error", event: WebSocketErrorEvent): void;
-    send(message: string): void;
-    close(code?: number, reason?: string): void;
-}
-
 export class Headers implements Iterable<[string, string]> {
     constructor(init?: HeadersInit);
     forEach(callback: (value: string, name: string) => void): void;
@@ -218,7 +190,6 @@ export class Body {
     json(): Promise<any>;
     size: number;
     text(): Promise<string>;
-    textConverted(): Promise<string>;
     // CHANGE: Added `formData()`
     formData(): Promise<FormData>;
     timeout: number;
@@ -236,12 +207,12 @@ export class FetchError extends Error {
     errno?: string;
 }
 
-export class Response extends Body {
-    constructor(body?: BodyInit, init?: ResponseInit);
+export class Response<WebSocket = never> extends Body {
+    constructor(body?: BodyInit, init?: ResponseInit<WebSocket>);
     static error(): Response;
     // CHANGE: made `status` optional
     static redirect(url: string, status?: number): Response;
-    clone(): Response;
+    clone(): Response<WebSocket>;
     headers: Headers;
     ok: boolean;
     redirected: boolean;
@@ -260,7 +231,7 @@ export type ResponseType =
     | "opaque"
     | "opaqueredirect";
 
-export interface ResponseInit {
+export interface ResponseInit<WebSocket = never> {
     headers?: HeadersInit;
     size?: number;
     status?: number;
@@ -290,10 +261,10 @@ export type BodyInit =
     | null;
 export type RequestInfo = string | URLLike | Request;
 
-declare function fetch(
+declare function fetch<WebSocket = never>(
     url: RequestInfo,
     init?: RequestInit
-): Promise<Response>;
+): Promise<Response<WebSocket>>;
 
 declare namespace fetch {
     function isRedirect(code: number): boolean;
