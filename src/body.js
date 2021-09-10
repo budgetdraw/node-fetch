@@ -119,33 +119,33 @@ export function createReadableStream(instance) {
 			switch (bodyType) {
 				case "String":
 					// body is a string:
-					array = new Uint8Array(Buffer.from(body));
+					array = Buffer.from(body);
 					break;
 				case "URLSearchParams":
 					// body is a URLSearchParams
-					array = new Uint8Array(Buffer.from(body.toString()));
+					array = Buffer.from(body.toString());
 					break;
 				case "Blob":
 					// body is blob
-					array = new Uint8Array(Buffer.from(body[BUFFER]));
+					array = Buffer.from(body[BUFFER]);
 					break;
 				case "Buffer":
 					// body is Buffer
-					array = new Uint8Array(Buffer.from(body));
+					array = Buffer.from(body);
 					break;
 				case "ArrayBuffer":
 					// body is ArrayBuffer
-					array = new Uint8Array(Buffer.from(body));
+					array = Buffer.from(body);
 					break;
 				case "ArrayBufferView":
 					// body is ArrayBufferView
-					array = new Uint8Array(Buffer.from(body.buffer));
+					array = Buffer.from(body.buffer, body.byteOffset, body.byteLength);
 					break;
 				case "FormData":
-					array = new Uint8Array(Buffer.from(body.toString()));
+					array = Buffer.from(body.toString());
 					break;
 				case "other":
-					array = new Uint8Array(Buffer.from(String(body)));
+					array = Buffer.from(String(body));
 					break;
 				default:
 					throw new Error("createReadableStream received an instance body that getTypeOfBody could not understand");

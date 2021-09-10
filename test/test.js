@@ -2074,6 +2074,14 @@ describe("Response", function() {
     });
   });
 
+  it("should support DataView on shared buffer as body", function() {
+    const buf = Buffer.from("a=1");
+    const res = new Response(new DataView(buf.buffer, buf.byteOffset, buf.byteLength));
+    return res.text().then(result => {
+      expect(result).to.equal("a=1");
+    });
+  });
+
   it("should default to null as body", function() {
     const res = new Response();
     expect(res.body).to.equal(null);
