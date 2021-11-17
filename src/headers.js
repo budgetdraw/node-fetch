@@ -121,6 +121,26 @@ export default class Headers {
 	}
 
 	/**
+	 * Return array of header values, for set-cookie only
+	 * See https://developers.cloudflare.com/workers/runtime-apis/headers#differences
+	 *
+	 * @param   String  name  Header name
+	 * @return  Mixed
+	 */
+	getAll(name) {
+		name = `${name}`;
+		if (name.toLowerCase() !== 'set-cookie') {
+			throw new Error('getAll only supported for set-cookie')
+		}
+		const key = find(this[MAP], name);
+		if (key === undefined) {
+			return null;
+		}
+
+		return this[MAP][key];
+	}
+
+	/**
 	 * Iterate over all headers
 	 *
 	 * @param   Function  callback  Executed for each item with parameters (value, name, thisArg)
@@ -250,6 +270,7 @@ Object.defineProperty(Headers.prototype, Symbol.toStringTag, {
 
 Object.defineProperties(Headers.prototype, {
 	get: { enumerable: true },
+	getAll: { enumerable: true },
 	forEach: { enumerable: true },
 	set: { enumerable: true },
 	append: { enumerable: true },

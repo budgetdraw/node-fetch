@@ -1502,11 +1502,25 @@ describe("node-fetch", () => {
     });
   });
 
+  it("should allow getAll for set-cookie header", function() {
+    const url = `${base}cookie`;
+    return fetch(url).then(res => {
+      const expected = ["a=1", "b=1"];
+      expect(res.headers.getAll("set-cookie")).to.deep.equal(expected);
+    });
+  })
+
+  it("should throw for getAll for headers other than set-cookie", function() {
+    const url = `${base}cookie`;
+    return fetch(url).then(res => {
+      expect(() => res.headers.getAll("foo")).to.throw('getAll only supported for set-cookie');
+    });
+  })
+
   it("should return all headers using raw()", function() {
     const url = `${base}cookie`;
     return fetch(url).then(res => {
       const expected = ["a=1", "b=1"];
-
       expect(res.headers.raw()["set-cookie"]).to.deep.equal(expected);
     });
   });
